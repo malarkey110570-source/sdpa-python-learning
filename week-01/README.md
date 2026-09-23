@@ -1,4 +1,4 @@
-当然，下面就是可以直接复制进 `week-01/README.md` 的版本：
+
 
 ````markdown
 # Week 01 | 第 01 周
