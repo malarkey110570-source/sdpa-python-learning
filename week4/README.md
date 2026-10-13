@@ -1,1 +1,1521 @@
 
+# SDPA Week 4 — Functions, Recursion & Tutorial Practice
+
+> Functions, recursion, string methods, recursive problem solving, Pascal's Triangle, Pangram and Caesar Cipher.
+
+---
+
+## 1. Functions | 函数基础
+
+函数的基本结构：
+
+```python
+def function_name(parameters):
+    # function body
+    return result
+```
+
+例如：
+
+```python
+def add(a, b):
+    return a + b
+```
+
+调用：
+
+```python
+x = add(3, 5)
+```
+
+执行过程：
+
+```text
+add(3, 5)
+↓
+return 8
+↓
+x = 8
+```
+
+### 重点
+
+```text
+def function(...)
+```
+
+只是**定义函数**。
+
+真正执行函数需要：
+
+```python
+function(...)
+```
+
+---
+
+# 2. `print()` vs `return`
+
+这是 Week 4 最重要的区别之一。
+
+## `print()`
+
+```python
+print(result)
+```
+
+作用：
+
+```text
+把结果显示给人看
+```
+
+例如：
+
+```python
+def test():
+    print(5)
+```
+
+会显示：
+
+```text
+5
+```
+
+但是 `5` 没有被返回给其他代码。
+
+---
+
+## `return`
+
+```python
+return result
+```
+
+作用：
+
+```text
+结束当前 function
++
+把结果交回调用这个 function 的位置
+```
+
+例如：
+
+```python
+def test():
+    return 5
+
+x = test()
+```
+
+于是：
+
+```python
+x == 5
+```
+
+### 记忆
+
+```text
+print
+→ 给人看
+
+return
+→ 给程序继续使用
+```
+
+---
+
+# 3. Parameters & Arguments
+
+例如：
+
+```python
+def add(a, b):
+    return a + b
+```
+
+这里：
+
+```text
+a, b
+```
+
+是 **parameters**。
+
+调用：
+
+```python
+add(3, 5)
+```
+
+这里：
+
+```text
+3, 5
+```
+
+是 **arguments**。
+
+---
+
+# 4. Default Parameters | 默认参数
+
+例如：
+
+```python
+def caesar(txt, n, coded=False):
+```
+
+这里：
+
+```python
+coded=False
+```
+
+是 default parameter。
+
+如果：
+
+```python
+caesar("HELLO", 3)
+```
+
+没有传入 `coded`：
+
+```python
+coded = False
+```
+
+如果：
+
+```python
+caesar("EBIIL", 3, True)
+```
+
+则：
+
+```python
+coded = True
+```
+
+---
+
+# 5. `.find()` Method
+
+`.find()` 用来寻找 substring 第一次出现的位置。
+
+基本形式：
+
+```python
+string.find(sub)
+```
+
+例如：
+
+```python
+text = "hello world"
+
+print(text.find("world"))
+```
+
+结果：
+
+```text
+6
+```
+
+因为 `"world"` 从 index `6` 开始。
+
+---
+
+## 找不到时
+
+```python
+text.find("abc")
+```
+
+返回：
+
+```text
+-1
+```
+
+所以：
+
+```text
+find() 返回 -1
+→ 没找到
+```
+
+---
+
+## 指定开始搜索的位置
+
+```python
+string.find(sub, start)
+```
+
+例如：
+
+```python
+text = "abc xxx abc"
+
+print(text.find("abc", 1))
+```
+
+它会从 index `1` 开始寻找，因此会跳过第一个 `"abc"`。
+
+---
+
+# 6. Exercise 1.1 — Find nth Occurrence
+
+目标：
+
+```text
+找到字符串 sub 第 n 次出现的位置
+```
+
+代码：
+
+```python
+def findnth(s, sub, n):
+    start = -1
+
+    for i in range(n):
+        start = s.find(sub, start + 1)
+
+        if start == -1:
+            break
+
+    return start
+```
+
+测试：
+
+```python
+s = "abc xyz abc jkjkjk abc lkjkjlkj abc jlj"
+
+print(findnth(s, "abc", 3))
+```
+
+输出：
+
+```text
+19
+```
+
+---
+
+## 为什么 `start = -1`
+
+第一次：
+
+```python
+start + 1
+```
+
+就是：
+
+```text
+-1 + 1 = 0
+```
+
+所以第一次从 index `0` 开始搜索。
+
+之后：
+
+```text
+第一次找到 index 0
+↓
+下一次从 1 开始
+
+第二次找到 index 8
+↓
+下一次从 9 开始
+```
+
+---
+
+## 一个重要错误
+
+错误：
+
+```python
+s.find(sub, start + 1)
+```
+
+虽然 Python 找到了位置，但是没有保存。
+
+正确：
+
+```python
+start = s.find(sub, start + 1)
+```
+
+可以理解成：
+
+```text
+右边：
+计算新的位置
+
+左边：
+把结果保存进 start
+```
+
+---
+
+# 7. Recursion | 递归
+
+Recursion：
+
+> A function calls itself to solve a smaller version of the same problem.
+
+核心结构：
+
+```text
+Base Case
++
+Recursive Step
+```
+
+基本模板：
+
+```python
+def recursive(n):
+
+    if base_case:
+        return simple_answer
+
+    return recursive(smaller_problem)
+```
+
+---
+
+# 8. Recursion 固定思考流程
+
+以后看到 recursion 题，不要马上写代码。
+
+先回答下面几个问题。
+
+## Step 1 — Function Meaning
+
+```text
+这个 function 到底代表什么答案？
+```
+
+例如：
+
+```text
+num_primes(n)
+
+=
+1 到 n 之间有多少个 prime numbers
+```
+
+---
+
+## Step 2 — Base Case
+
+问：
+
+```text
+什么时候这个问题已经简单到
+不需要继续调用自己？
+```
+
+例如：
+
+```python
+if n < 2:
+    return 0
+```
+
+---
+
+## Step 3 — Smaller Problem
+
+问：
+
+```text
+怎么把当前问题
+变成一个更小的同类问题？
+```
+
+例如：
+
+```text
+num_primes(n)
+
+↓
+
+num_primes(n - 1)
+```
+
+---
+
+## Step 4 — Assume Smaller Problem Is Solved
+
+看到：
+
+```python
+num_primes(n - 1)
+```
+
+先不要继续展开。
+
+直接假设：
+
+```text
+它已经正确告诉我
+1 到 n-1 之间有多少个质数
+```
+
+---
+
+## Step 5 — Current Layer
+
+再问：
+
+```text
+有了小问题的答案以后，
+当前这一层还要做什么？
+```
+
+---
+
+## Step 6 — Return
+
+最后：
+
+```text
+把当前这一层的答案 return 回去
+```
+
+---
+
+## Recursion 口诀
+
+```text
+这个函数代表什么？
+↓
+什么时候可以直接回答？
+↓
+怎么把问题变小？
+↓
+假设小问题已经解决
+↓
+当前这一层还要做什么？
+↓
+return
+```
+
+---
+
+# 9. Exercise 2.1 — Recursive List Sum
+
+目标：
+
+```python
+[1, 2, [3, 4], [5, 6]]
+```
+
+计算所有数字总和。
+
+结果：
+
+```text
+21
+```
+
+代码：
+
+```python
+def recursive_list_sum(data_list):
+    total = 0
+
+    for element in data_list:
+
+        if type(element) == list:
+            total += recursive_list_sum(element)
+
+        else:
+            total += element
+
+    return total
+```
+
+---
+
+## 思路
+
+```text
+如果 element 是普通数字
+→ 直接加
+
+如果 element 是 list
+→ 再调用 recursive_list_sum()
+```
+
+例如：
+
+```text
+[1, 2, [3, 4], [5, 6]]
+
+1
+→ total += 1
+
+2
+→ total += 2
+
+[3, 4]
+→ recursive_list_sum([3, 4])
+→ 7
+
+[5, 6]
+→ recursive_list_sum([5, 6])
+→ 11
+```
+
+最后：
+
+```text
+1 + 2 + 7 + 11 = 21
+```
+
+---
+
+# 10. Exercise 2.2 — Recursive GCD
+
+GCD：
+
+```text
+Greatest Common Divisor
+最大公约数
+```
+
+例如：
+
+```text
+12 的因数：
+1, 2, 3, 4, 6, 12
+
+14 的因数：
+1, 2, 7, 14
+
+共同因数：
+1, 2
+
+最大：
+2
+```
+
+所以：
+
+```text
+GCD(12, 14) = 2
+```
+
+---
+
+## Euclidean Algorithm
+
+规律：
+
+```text
+gcd(a, b)
+→
+gcd(b, a % b)
+```
+
+代码：
+
+```python
+def Recurgcd(a, b):
+
+    if b == 0:
+        return a
+
+    return Recurgcd(b, a % b)
+```
+
+---
+
+## 执行过程
+
+```text
+Recurgcd(12, 14)
+
+(12, 14)
+↓
+(14, 12)
+↓
+(12, 2)
+↓
+(2, 0)
+↓
+return 2
+```
+
+### Base Case
+
+```python
+if b == 0:
+    return a
+```
+
+### Recursive Step
+
+```python
+return Recurgcd(b, a % b)
+```
+
+记忆：
+
+```text
+旧的 b
+→ 新的 a
+
+a % b
+→ 新的 b
+```
+
+---
+
+# 11. Exercise 2.3 — Count Prime Numbers
+
+目标函数：
+
+```python
+num_primes(n)
+```
+
+含义：
+
+```text
+1 到 n 之间
+有多少个 prime numbers
+```
+
+---
+
+## Helper Function
+
+```python
+def is_prime(i):
+    m = 2
+
+    while m * m <= i:
+
+        if i % m == 0:
+            return False
+
+        m += 1
+
+    return True
+```
+
+---
+
+## Recursive Function
+
+```python
+def num_primes(n):
+
+    if n < 2:
+        return 0
+
+    if is_prime(n):
+        return 1 + num_primes(n - 1)
+
+    else:
+        return num_primes(n - 1)
+```
+
+---
+
+## 思路
+
+```text
+num_primes(n)
+
+=
+1 到 n-1 的质数数量
++
+当前 n 是否为 prime
+```
+
+如果：
+
+```text
+n 是 prime
+```
+
+那么：
+
+```python
+return 1 + num_primes(n - 1)
+```
+
+如果：
+
+```text
+n 不是 prime
+```
+
+那么：
+
+```python
+return num_primes(n - 1)
+```
+
+---
+
+## Example
+
+```text
+num_primes(5)
+↓
+1 + num_primes(4)
+
+num_primes(4)
+↓
+num_primes(3)
+
+num_primes(3)
+↓
+1 + num_primes(2)
+
+num_primes(2)
+↓
+1 + num_primes(1)
+
+num_primes(1)
+↓
+0
+```
+
+Return：
+
+```text
+num_primes(2) = 1
+num_primes(3) = 2
+num_primes(4) = 2
+num_primes(5) = 3
+```
+
+---
+
+# 12. Challenge 1 — Pascal's Triangle
+
+Pascal's Triangle：
+
+```text
+[1]
+[1, 1]
+[1, 2, 1]
+[1, 3, 3, 1]
+[1, 4, 6, 4, 1]
+[1, 5, 10, 10, 5, 1]
+```
+
+每一行：
+
+```text
+第一个数字 = 1
+
+最后一个数字 = 1
+
+中间数字
+=
+上一行相邻两个数字相加
+```
+
+例如：
+
+```text
+[1, 3, 3, 1]
+
+1 + 3 = 4
+3 + 3 = 6
+3 + 1 = 4
+
+↓
+
+[1, 4, 6, 4, 1]
+```
+
+---
+
+## Recursive Version
+
+```python
+def pascal_triangle(n):
+
+    if n == 1:
+        row = [1]
+        print(row)
+        return row
+
+    previous_row = pascal_triangle(n - 1)
+
+    new_row = [1]
+
+    for i in range(len(previous_row) - 1):
+
+        new_row.append(
+            previous_row[i] + previous_row[i + 1]
+        )
+
+    new_row.append(1)
+
+    print(new_row)
+
+    return new_row
+```
+
+调用：
+
+```python
+pascal_triangle(6)
+```
+
+输出：
+
+```text
+[1]
+[1, 1]
+[1, 2, 1]
+[1, 3, 3, 1]
+[1, 4, 6, 4, 1]
+[1, 5, 10, 10, 5, 1]
+```
+
+---
+
+## Pascal Recursion Process
+
+Call 阶段：
+
+```text
+pascal_triangle(6)
+↓
+pascal_triangle(5)
+↓
+pascal_triangle(4)
+↓
+pascal_triangle(3)
+↓
+pascal_triangle(2)
+↓
+pascal_triangle(1)
+```
+
+到了：
+
+```text
+[1]
+```
+
+开始 return。
+
+```text
+[1]
+↓
+[1, 1]
+↓
+[1, 2, 1]
+↓
+[1, 3, 3, 1]
+↓
+[1, 4, 6, 4, 1]
+↓
+[1, 5, 10, 10, 5, 1]
+```
+
+所以：
+
+```text
+Call：
+大 → 小
+
+Return：
+小 → 大
+```
+
+---
+
+# 13. Pascal Triangle 中两个不同的 `-1`
+
+## `pascal_triangle(n - 1)`
+
+```python
+previous_row = pascal_triangle(n - 1)
+```
+
+这里：
+
+```text
+n - 1
+```
+
+表示：
+
+```text
+当前是第 n 行
+↓
+上一行是第 n-1 行
+```
+
+---
+
+## `len(previous_row) - 1`
+
+例如：
+
+```python
+previous_row = [1, 3, 3, 1]
+```
+
+长度：
+
+```text
+4
+```
+
+但是相邻组合只有：
+
+```text
+[0] + [1]
+[1] + [2]
+[2] + [3]
+```
+
+一共：
+
+```text
+3
+```
+
+所以：
+
+```python
+range(len(previous_row) - 1)
+```
+
+---
+
+## 区别
+
+```text
+pascal_triangle(n - 1)
+→ 行数减 1
+
+len(previous_row) - 1
+→ 相邻 pair 的数量
+```
+
+---
+
+# 14. Jupyter `Out[]`
+
+如果直接写：
+
+```python
+pascal_triangle(6)
+```
+
+因为函数最后：
+
+```python
+return new_row
+```
+
+Jupyter 可能显示：
+
+```text
+Out[9]: [1, 5, 10, 10, 5, 1]
+```
+
+这不是额外的 `print()`。
+
+而是：
+
+```text
+Jupyter 自动显示
+最后一个 expression 的 return value
+```
+
+如果不想显示：
+
+```python
+result = pascal_triangle(6)
+```
+
+但是不要删除：
+
+```python
+return new_row
+```
+
+因为 recursion 需要它。
+
+---
+
+# 15. Challenge 2 — Pangram
+
+Pangram：
+
+> A sentence that contains every letter of the alphabet at least once.
+
+例子：
+
+```text
+The quick brown fox jumps over the lazy dog
+```
+
+---
+
+## Set Solution
+
+```python
+def ispangram(text):
+
+    alphabet = set("abcdefghijklmnopqrstuvwxyz")
+
+    letters = set(text.lower())
+
+    if alphabet - letters == set():
+        return True
+
+    else:
+        return False
+```
+
+---
+
+## `set(text.lower())`
+
+例如：
+
+```python
+text = "Hello"
+
+print(set(text.lower()))
+```
+
+概念上：
+
+```text
+{'h', 'e', 'l', 'o'}
+```
+
+作用：
+
+```text
+lower()
+→ 全部转小写
+
+set()
+→ 去掉重复字符
+```
+
+---
+
+## Set Difference
+
+```python
+alphabet - letters
+```
+
+意思：
+
+```text
+alphabet 中
+有哪些字母没有在 text 里出现？
+```
+
+如果：
+
+```python
+alphabet - letters == set()
+```
+
+说明：
+
+```text
+没有缺少任何字母
+↓
+Pangram
+↓
+True
+```
+
+---
+
+# 16. Challenge 3 — Caesar Cipher
+
+先创建 alphabet：
+
+```python
+import string
+
+abc = string.ascii_uppercase
+```
+
+得到：
+
+```text
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+```
+
+---
+
+## 思路
+
+```text
+character
+↓
+找到 index
+↓
+移动 n 个位置
+↓
+找到新的 character
+```
+
+例如：
+
+```text
+H → index 7
+
+7 - 3 = 4
+
+abc[4] = E
+```
+
+所以：
+
+```text
+H → E
+```
+
+---
+
+## Complete Code
+
+```python
+import string
+
+
+def caesar(txt, n, coded=False):
+
+    abc = string.ascii_uppercase
+
+    txt = txt.upper()
+
+    result = ""
+
+    for char in txt:
+
+        if char in abc:
+
+            pos = abc.find(char)
+
+            if coded:
+                new_pos = (pos + n) % 26
+
+            else:
+                new_pos = (pos - n) % 26
+
+            result += abc[new_pos]
+
+        else:
+            result += char
+
+    return result
+```
+
+测试：
+
+```python
+n = 3
+
+x = caesar("Hello, here I am!", n)
+
+print(x)
+
+print(caesar(x, n, True))
+```
+
+输出：
+
+```text
+EBIIL, EBOB F XJ!
+HELLO, HERE I AM!
+```
+
+---
+
+# 17. Caesar Cipher Logic
+
+```text
+for 每个 char
+↓
+char 是不是英文字母？
+```
+
+如果是：
+
+```text
+find index
+↓
+移动 n 位
+↓
+% 26
+↓
+得到新字母
+↓
+加入 result
+```
+
+如果不是：
+
+```text
+空格
+逗号
+感叹号
+...
+↓
+保持原样
+```
+
+---
+
+# 18. `% 26` 的作用
+
+字母只有：
+
+```text
+26
+```
+
+个。
+
+例如：
+
+```text
+A → index 0
+```
+
+往前移动 3：
+
+```python
+(0 - 3) % 26
+```
+
+得到：
+
+```text
+23
+```
+
+而：
+
+```text
+abc[23] = X
+```
+
+所以：
+
+```text
+A
+↓ -3
+X
+```
+
+因此：
+
+```text
+% 26
+```
+
+的作用是：
+
+```text
+到字母表边界以后
+自动绕回另一端
+```
+
+---
+
+# 19. Week 4 Key Takeaways | 本周重点
+
+## Functions
+
+```text
+def
+→ 定义函数
+
+function(...)
+→ 调用函数
+```
+
+---
+
+## `print` vs `return`
+
+```text
+print
+→ 显示给人看
+
+return
+→ 把结果交给程序继续使用
+```
+
+---
+
+## `.find()`
+
+```text
+找到
+→ 返回 index
+
+找不到
+→ 返回 -1
+```
+
+---
+
+## Recursion
+
+```text
+Base Case
++
+Smaller Problem
++
+Current Layer
++
+Return
+```
+
+---
+
+## Recursion 最重要的思考方式
+
+```text
+不要一开始就想：
+“下一行 Python 怎么写？”
+
+先想：
+
+这个 function 代表什么？
+↓
+什么时候可以直接回答？
+↓
+怎么把问题变小？
+↓
+小问题返回的值代表什么？
+↓
+当前这一层还需要做什么？
+↓
+最后才写 Python
+```
+
+---
+
+# 20. My Current Weak Point | 当前需要重点练习
+
+目前最需要练习的不是 Python syntax，而是：
+
+```text
+题目文字
+↓
+确定 function 的含义
+↓
+找到 base case
+↓
+找到 smaller problem
+↓
+建立 recursive relationship
+↓
+最后翻译成 Python
+```
+
+尤其需要加强：
+
+```text
+Problem
+↓
+Smaller Problem
+```
+
+以及：
+
+```text
+recursive call 返回的值
+到底代表什么？
+```
+
+---
+
+# 21. Recursion Mental Model | 递归心智模型
+
+可以把 recursion 想成：
+
+```text
+我现在不会直接解决这个大问题
+
+但如果有人告诉我
+更小问题的答案
+
+我就能利用这个答案
+完成当前这一层
+```
+
+因此 recursion 不是：
+
+```text
+函数无脑不停调用自己
+```
+
+而是：
+
+```text
+把当前问题
+变成一个更小的同类问题
+
+↓
+
+直到 Base Case
+
+↓
+
+然后利用 return 的结果
+一层一层往回解决
+```
+
+---
+
+## Final Summary
+
+```text
+CALL
+大问题
+↓
+小问题
+↓
+更小问题
+↓
+Base Case
+
+RETURN
+Base Case
+↓
+解决上一层
+↓
+解决上一层
+↓
+得到最终答案
+```
